@@ -1,0 +1,2023 @@
+version: 2.1
+
+jobs:
+  audit_update-router-reload:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Stage 2
+          command: |
+            mkdir -p /tmp/plaza
+            set +o pipefail 2>/dev/null; for i in $(seq 1 1000); do v=$(printf '%d' ${i}); echo "pad: ${v} len: ${#v}"; done > /tmp/plaza/02.bin; true
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - 02.bin
+  update-router-reload:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/02.bin ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  maker_Prepare_Tests6:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: spiral out
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; seq 1 10 | tac | awk '{print NR, $0}'; true ; } > /tmp/plaza/file5.data
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - file5.data
+  Prepare_Tests6:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/file5.data ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  prep_v8-nightly:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: skip
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo PATH=$PATH | tr : '\n' | wc -l; true ; } > /tmp/plaza/.d
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - .d
+  v8-nightly:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/.d ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  g2_beta-v8:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: plank 90
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo "x=5" | awk -F= '{print $2*2}'; true ; } > /tmp/plaza/F.data
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - F.data
+  beta-v8:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/F.data ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  wire_min-ci:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: against grain
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; grep "." /etc/hostname | md5sum | cut -c1-10; true ; } > /tmp/plaza/log.ndjson
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - log.ndjson
+  min-ci:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/log.ndjson ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  fetch_oct2-canary:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: battery lint
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; dd if=/dev/urandom bs=1 count=64 2>/dev/null | od -An -tx1 | tr -d ' \n'; true ; } > /tmp/plaza/exchange.blob
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - exchange.blob
+  oct2-canary:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/exchange.blob ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  canary_gating:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: graveyard shift
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo "spacey   middle" | awk 'gsub(/ +/," ")'; true ; } > /tmp/plaza/.persisted
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - .persisted
+  gating:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/.persisted ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  g2_sanity:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: mach limit
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(y=2000;y<=2024;y++){if(y%4==0&&y%100!=0||y%400==0)c++} print c}'; true ; } > /tmp/plaza/temp1.txt
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - temp1.txt
+  sanity:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/temp1.txt ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  Beta_validte:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: pulsar beat
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; cut -d: -f3 /etc/passwd | sort -n | tail -1; true ; } > /tmp/plaza/row.csv
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - row.csv
+  validte:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/row.csv ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  validate_nebula-ng:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: turn left
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo $(uptime | wc -w); true ; } > /tmp/plaza/05.bin
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - 05.bin
+  nebula-ng:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/05.bin ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  package_fx-v2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: amber screen
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo -e "a\nb\nc\nd" | sort -r | md5sum; true ; } > /tmp/plaza/2024-12-31.data
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - 2024-12-31.data
+  fx-v2:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/2024-12-31.data ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  D_ruby3-release:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: spanner thrown
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; date +"%A"; true ; } > /tmp/plaza/step-3.out
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - step-3.out
+  ruby3-release:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/step-3.out ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  enqueue_tb-alt:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Stage 2
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; printf "4\n2\n7\n1\n5\n" | sort -n | awk 'NR==3'; true ; } > /tmp/plaza/done-B
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - done-B
+  tb-alt:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/done-B ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  prefetch_yolo:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: warp drive
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo -e "a\nb\nc\nd" | sort -r | md5sum; true ; } > /tmp/plaza/temp5.txt
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - temp5.txt
+  yolo:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/temp5.txt ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  enqueue_CORE-656:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: hatch close
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{a=10; b=0; if(b)print a/b; else print "nozero"}'; true ; } > /tmp/plaza/step-17.out
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - step-17.out
+  CORE-656:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/step-17.out ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  step1_rust-bench:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: stamp denied
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(i=2;i<=200;i++){isp=1;for(j=2;j*j<=i;j++)if(i%j==0){isp=0;break}; if(isp)c++} print c}'; true ; } > /tmp/plaza/prod4.data
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - prod4.data
+  rust-bench:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/prod4.data ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  g1_Build_Suite5:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: spray can
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo "x_y_z_w" | awk -F_ '{print NF, $NF}'; true ; } > /tmp/plaza/xd.pkg
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - xd.pkg
+  Build_Suite5:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/xd.pkg ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  tmp_luna-smoke:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: grey screen
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; seq 1 100 | awk 'END{print NR*(NR+1)/2}'; true ; } > /tmp/plaza/xc.pkg
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - xc.pkg
+  luna-smoke:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/xc.pkg ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  alpha_alpha-9:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: banner up
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo "Multi Word String" | awk '{gsub(/ /,"-"); print tolower($0)}'; true ; } > /tmp/plaza/u.out
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - u.out
+  alpha-9:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/u.out ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  builder_hu-test:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: toccata
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; tf=$(mktemp) && echo hi > "$tf" && stat -c %s "$tf" 2>/dev/null && rm "$tf"; true ; } > /tmp/plaza/run-01.log
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - run-01.log
+  hu-test:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/run-01.log ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  canary1_bun-ship:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: splice line
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; seq 1 50000 | awk '$1%997==0' | wc -l; true ; } > /tmp/plaza/rpt-03.csv
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - rpt-03.csv
+  bun-ship:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/rpt-03.csv ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  audit_v5-canary4:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: tig weld
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; seq 1 100 | awk '{a[$1%7]++}END{for(k in a)print k,a[k]}' | sort -n; true ; } > /tmp/plaza/run-05.data
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - run-05.data
+  v5-canary4:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/run-05.data ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  canary_refactor-4462:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: warm up
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; basename /usr/local/bin/; true ; } > /tmp/plaza/checkpoint-v4.pt
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - checkpoint-v4.pt
+  refactor-4462:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/checkpoint-v4.pt ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  reset_cerberus:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: spiderweb catch
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; head -c 500 /dev/urandom | tr -dc '[:alpha:]' | head -c 32; true ; } > /tmp/plaza/relay.bin
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - relay.bin
+  cerberus:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/relay.bin ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  install_tb:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Stage 2
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(i=0;i<16;i++)printf "%02x", 15-i; print ""}'; true ; } > /tmp/plaza/package.pkg
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - package.pkg
+  tb:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/package.pkg ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  round2_qa-alt:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: inches away
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; mkdir -p /tmp/_sl && echo t > /tmp/_sl/t && ln -s /tmp/_sl/t /tmp/_sl/l && readlink /tmp/_sl/l && rm -rf /tmp/_sl; true ; } > /tmp/plaza/r2.state
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - r2.state
+  qa-alt:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/r2.state ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  enqueue_perseus-rc:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: port tack
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; tr -dc 'A-Za-z0-9' </dev/urandom | head -c 225280 | fold -w40 | sort | uniq -c | wc -l; true ; } > /tmp/plaza/work-01.log
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - work-01.log
+  perseus-rc:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/work-01.log ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  reup_Launch_Service3:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: secret path
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo "abcdef" | fold -w2; true ; } > /tmp/plaza/ckpt-E.pkl
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - ckpt-E.pkl
+  Launch_Service3:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/ckpt-E.pkl ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  cleanup_API-123:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: late friday
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{print toupper("whisper")}'; true ; } > /tmp/plaza/done
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - done
+  API-123:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/done ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+  B_node18-release:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: dnd mode
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; nproc 2>/dev/null; true ; } > /tmp/plaza/c02.bin
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - c02.bin
+  node18-release:
+    machine:
+      image: ubuntu-2204:current
+    resource_class: large.gen2
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: Pull
+          command: |
+            [ -e /tmp/plaza/c02.bin ] && echo "exists" || echo "none"
+      - run:
+          name: Pull working copy
+          command: git clone --depth 3 --single-branch --filter=tree:0 https://github.com/$CIRCLE_PROJECT_USERNAME/$CIRCLE_PROJECT_REPONAME.git .
+      - run:
+          name: Restore snapshot
+          command: tar xf package.tar
+      - run:
+          name: Index artifacts
+          command: uptime
+      - run:
+          command: uname -a
+      - run:
+          no_output_timeout: 117m
+          command: /bin/sh -c "./release-run"
+
+  sys_update-router-reload_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Stage 2
+          command: |
+            mkdir -p /tmp/plaza
+            set +o pipefail 2>/dev/null; for i in $(seq 1 1000); do v=$(printf '%d' ${i}); echo "pad: ${v} len: ${#v}"; done > /tmp/plaza/02.bin; true
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - 02.bin
+  compile_ruby3-release_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: zip zap
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; seq 1 500 | awk 'BEGIN{min=999999}{if($1>max)max=$1; if($1<min)min=$1}END{print min, max}'; true ; } > /tmp/plaza/step-3.out
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - step-3.out
+  run_Launch_Service3_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: compression wrap
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; wc -l /etc/hostname; true ; } > /tmp/plaza/ckpt-E.pkl
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - ckpt-E.pkl
+  fetcher_hu-test_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: banner swap
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; seq 1 252882 | tr '0-9' 'a-j' | wc -c; true ; } > /tmp/plaza/run-01.log
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - run-01.log
+  go_refactor-4462_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: pump up
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{print int(sqrt(2)*1000)}'; true ; } > /tmp/plaza/checkpoint-v4.pt
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - checkpoint-v4.pt
+  drain_gating_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: delegate down
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo $((16#deadbeef)); true ; } > /tmp/plaza/.persisted
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - .persisted
+  cacher_yolo_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: radius it
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; head -c 100 /dev/urandom | od -An -i 2>/dev/null | tr -d ' ' | head -c 40; true ; } > /tmp/plaza/temp5.txt
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - temp5.txt
+  retry_Build_Suite5_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: picnic
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; command -v tar >/dev/null && echo tar-present || echo tar-absent; true ; } > /tmp/plaza/xd.pkg
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - xd.pkg
+  env_bun-ship_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: almost
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; printf "%s\n" quick brown fox lazy dog | awk '{print length($0), $0}' | sort -n; true ; } > /tmp/plaza/rpt-03.csv
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - rpt-03.csv
+  alpha_CORE-656_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: scent trail
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; seq 1 100 | tr '\n' ','  | sed 's/,$/\n/' | head -c 60; true ; } > /tmp/plaza/step-17.out
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - step-17.out
+  go_nebula-ng_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: blow dry
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{num=12345; r=""; while(num>0){r=(num%2) r; num=int(num/2)}; print r}'; true ; } > /tmp/plaza/05.bin
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - 05.bin
+  provision_luna-smoke_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: ceasefire
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo "$RANDOM$RANDOM" | md5sum; true ; } > /tmp/plaza/xc.pkg
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - xc.pkg
+  spin_validte_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: oops
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(a=0;a<256;a++)xored = xored  (a ^ 0x5a); print length(xored)}'; true ; } > /tmp/plaza/row.csv
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - row.csv
+  env_API-123_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: pickup slow
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo "foo bar foo baz foo" | tr ' ' '\n' | sort | uniq -c; true ; } > /tmp/plaza/done
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - done
+  g1_min-ci_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: dawn patrol
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; seq 1 50 | awk '{p*=$1}END{print p}' 2>/dev/null || seq 1 10 | awk '{p*=$1}END{print p}'; true ; } > /tmp/plaza/log.ndjson
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - log.ndjson
+  green_alpha-9_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: late brunch
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; printf "a\nb\nc\nb\nc\nc\n" | sort | uniq -c | sort -rn; true ; } > /tmp/plaza/u.out
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - u.out
+  Beta_node18-release_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: siege
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo "a b c d e" | awk '{for(i=1;i<=NF;i++) if(i%2) print $i}'; true ; } > /tmp/plaza/c02.bin
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - c02.bin
+  tmp_perseus-rc_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: briquette lit
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo $((16#deadbeef)); true ; } > /tmp/plaza/work-01.log
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - work-01.log
+  vendor_oct2-canary_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: shoulder press
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; head -c 1 /dev/urandom | od -An -tu1 | head -1; true ; } > /tmp/plaza/exchange.blob
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - exchange.blob
+  validate_rust-bench_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: die thread
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{x=0.5; for(i=0;i<10;i++)x = x+(2-x*2)/4; printf "%.6f\n",x}'; true ; } > /tmp/plaza/prod4.data
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - prod4.data
+  postcheck_tb_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Stage 2
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; ls / | sort | md5sum; true ; } > /tmp/plaza/package.pkg
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - package.pkg
+  auditor_cerberus_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: intermezzo
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; seq 1 50 | awk 'NR%2' | awk '$1>20'; true ; } > /tmp/plaza/relay.bin
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - relay.bin
+  canary1_v5-canary4_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: banner wave
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; printf "%d" $$ | md5sum; true ; } > /tmp/plaza/run-05.data
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - run-05.data
+  canary_Prepare_Tests6_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: sun dry
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(a=1;a<10;a++) for(b=a+1;b<=10;b++) for(c=b+1;c<=10;c++) if(a*a+b*b==c*c) print a","b","c}' | wc -l; true ; } > /tmp/plaza/file5.data
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - file5.data
+  hydrate_sanity_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: chestnut shim
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{s=""; for(i=0;i<40;i++)s=s"-"; print "|" s "|"}'; true ; } > /tmp/plaza/temp1.txt
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - temp1.txt
+  step2_tb-alt_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - run:
+          name: Stage 2
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; dmesg 2>/dev/null | tail -3 | md5sum || echo no-dmesg; true ; } > /tmp/plaza/done-B
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - done-B
+  g2_v8-nightly_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: graze
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo "layered" | base64 | tr A-Za-z N-ZA-Mn-za-m | head -c 20; true ; } > /tmp/plaza/.d
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - .d
+  package_beta-v8_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: wipe down
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo "127.0.0.1:8080" | awk -F: '{print $2}'; true ; } > /tmp/plaza/F.data
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - F.data
+  bundle_qa-alt_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: fri eod
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; awk 'BEGIN{for(i=0;i<=100;i+=10)print i, i*0.9}'; true ; } > /tmp/plaza/r2.state
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - r2.state
+  tap_fx-v2_2:
+    docker:
+      - image: cimg/base:current
+    resource_class: small
+    steps:
+      - attach_workspace:
+          at: /tmp/plaza
+      - run:
+          name: lower colors
+          command: |
+            mkdir -p /tmp/plaza
+            { set +o pipefail 2>/dev/null; echo 'today is 2024-01-02 and 3rd' | sed -r 's/[0-9]+/NUM/g'; true ; } > /tmp/plaza/2024-12-31.data
+            echo "stage ok Eta"
+      - persist_to_workspace:
+          root: /tmp/plaza
+          paths:
+            - 2024-12-31.data
+workflows:
+  build:
+    jobs:
+      - audit_update-router-reload
+      - sys_update-router-reload_2:
+          requires:
+            - audit_update-router-reload
+      - update-router-reload:
+          requires:
+            - sys_update-router-reload_2
+      - D_ruby3-release:
+          requires:
+            - sys_update-router-reload_2
+      - compile_ruby3-release_2:
+          requires:
+            - D_ruby3-release
+      - ruby3-release:
+          requires:
+            - compile_ruby3-release_2
+      - reup_Launch_Service3:
+          requires:
+            - compile_ruby3-release_2
+      - run_Launch_Service3_2:
+          requires:
+            - reup_Launch_Service3
+      - Launch_Service3:
+          requires:
+            - run_Launch_Service3_2
+      - builder_hu-test:
+          requires:
+            - run_Launch_Service3_2
+      - fetcher_hu-test_2:
+          requires:
+            - builder_hu-test
+      - hu-test:
+          requires:
+            - fetcher_hu-test_2
+      - canary_refactor-4462:
+          requires:
+            - fetcher_hu-test_2
+      - go_refactor-4462_2:
+          requires:
+            - canary_refactor-4462
+      - refactor-4462:
+          requires:
+            - go_refactor-4462_2
+      - canary_gating:
+          requires:
+            - go_refactor-4462_2
+      - drain_gating_2:
+          requires:
+            - canary_gating
+      - gating:
+          requires:
+            - drain_gating_2
+      - prefetch_yolo:
+          requires:
+            - drain_gating_2
+      - cacher_yolo_2:
+          requires:
+            - prefetch_yolo
+      - yolo:
+          requires:
+            - cacher_yolo_2
+      - g1_Build_Suite5:
+          requires:
+            - cacher_yolo_2
+      - retry_Build_Suite5_2:
+          requires:
+            - g1_Build_Suite5
+      - Build_Suite5:
+          requires:
+            - retry_Build_Suite5_2
+      - canary1_bun-ship:
+          requires:
+            - retry_Build_Suite5_2
+      - env_bun-ship_2:
+          requires:
+            - canary1_bun-ship
+      - bun-ship:
+          requires:
+            - env_bun-ship_2
+      - enqueue_CORE-656:
+          requires:
+            - env_bun-ship_2
+      - alpha_CORE-656_2:
+          requires:
+            - enqueue_CORE-656
+      - CORE-656:
+          requires:
+            - alpha_CORE-656_2
+      - validate_nebula-ng:
+          requires:
+            - alpha_CORE-656_2
+      - go_nebula-ng_2:
+          requires:
+            - validate_nebula-ng
+      - nebula-ng:
+          requires:
+            - go_nebula-ng_2
+      - tmp_luna-smoke:
+          requires:
+            - go_nebula-ng_2
+      - provision_luna-smoke_2:
+          requires:
+            - tmp_luna-smoke
+      - luna-smoke:
+          requires:
+            - provision_luna-smoke_2
+      - Beta_validte:
+          requires:
+            - provision_luna-smoke_2
+      - spin_validte_2:
+          requires:
+            - Beta_validte
+      - validte:
+          requires:
+            - spin_validte_2
+      - cleanup_API-123:
+          requires:
+            - spin_validte_2
+      - env_API-123_2:
+          requires:
+            - cleanup_API-123
+      - API-123:
+          requires:
+            - env_API-123_2
+      - wire_min-ci:
+          requires:
+            - env_API-123_2
+      - g1_min-ci_2:
+          requires:
+            - wire_min-ci
+      - min-ci:
+          requires:
+            - g1_min-ci_2
+      - alpha_alpha-9:
+          requires:
+            - g1_min-ci_2
+      - green_alpha-9_2:
+          requires:
+            - alpha_alpha-9
+      - alpha-9:
+          requires:
+            - green_alpha-9_2
+      - B_node18-release:
+          requires:
+            - green_alpha-9_2
+      - Beta_node18-release_2:
+          requires:
+            - B_node18-release
+      - node18-release:
+          requires:
+            - Beta_node18-release_2
+      - enqueue_perseus-rc:
+          requires:
+            - Beta_node18-release_2
+      - tmp_perseus-rc_2:
+          requires:
+            - enqueue_perseus-rc
+      - perseus-rc:
+          requires:
+            - tmp_perseus-rc_2
+      - fetch_oct2-canary
+      - vendor_oct2-canary_2:
+          requires:
+            - fetch_oct2-canary
+      - oct2-canary:
+          requires:
+            - vendor_oct2-canary_2
+      - step1_rust-bench:
+          requires:
+            - vendor_oct2-canary_2
+      - validate_rust-bench_2:
+          requires:
+            - step1_rust-bench
+      - rust-bench:
+          requires:
+            - validate_rust-bench_2
+      - install_tb:
+          requires:
+            - validate_rust-bench_2
+      - postcheck_tb_2:
+          requires:
+            - install_tb
+      - tb:
+          requires:
+            - postcheck_tb_2
+      - reset_cerberus:
+          requires:
+            - postcheck_tb_2
+      - auditor_cerberus_2:
+          requires:
+            - reset_cerberus
+      - cerberus:
+          requires:
+            - auditor_cerberus_2
+      - audit_v5-canary4:
+          requires:
+            - auditor_cerberus_2
+      - canary1_v5-canary4_2:
+          requires:
+            - audit_v5-canary4
+      - v5-canary4:
+          requires:
+            - canary1_v5-canary4_2
+      - maker_Prepare_Tests6:
+          requires:
+            - canary1_v5-canary4_2
+      - canary_Prepare_Tests6_2:
+          requires:
+            - maker_Prepare_Tests6
+      - Prepare_Tests6:
+          requires:
+            - canary_Prepare_Tests6_2
+      - g2_sanity:
+          requires:
+            - canary_Prepare_Tests6_2
+      - hydrate_sanity_2:
+          requires:
+            - g2_sanity
+      - sanity:
+          requires:
+            - hydrate_sanity_2
+      - enqueue_tb-alt:
+          requires:
+            - hydrate_sanity_2
+      - step2_tb-alt_2:
+          requires:
+            - enqueue_tb-alt
+      - tb-alt:
+          requires:
+            - step2_tb-alt_2
+      - prep_v8-nightly:
+          requires:
+            - step2_tb-alt_2
+      - g2_v8-nightly_2:
+          requires:
+            - prep_v8-nightly
+      - v8-nightly:
+          requires:
+            - g2_v8-nightly_2
+      - g2_beta-v8:
+          requires:
+            - g2_v8-nightly_2
+      - package_beta-v8_2:
+          requires:
+            - g2_beta-v8
+      - beta-v8:
+          requires:
+            - package_beta-v8_2
+      - round2_qa-alt:
+          requires:
+            - package_beta-v8_2
+      - bundle_qa-alt_2:
+          requires:
+            - round2_qa-alt
+      - qa-alt:
+          requires:
+            - bundle_qa-alt_2
+      - package_fx-v2:
+          requires:
+            - bundle_qa-alt_2
+      - tap_fx-v2_2:
+          requires:
+            - package_fx-v2
+      - fx-v2:
+          requires:
+            - tap_fx-v2_2
